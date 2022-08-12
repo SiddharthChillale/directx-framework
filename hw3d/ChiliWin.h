@@ -62,4 +62,5 @@
 
 #define STRICT
 
+#include <string>
 #include <Windows.h>

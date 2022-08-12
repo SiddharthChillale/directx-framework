@@ -5,7 +5,6 @@
 #include <wrl.h>
 #include <vector>
 #include "DxgiInfoManager.h"
-
 class Graphics
 {
 public:
