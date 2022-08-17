@@ -131,23 +131,35 @@ void Graphics::DrawTestTriangle()
 	// Bind vertex buffer to pipeline
 	const UINT stride = sizeof( Vertex );
 	const UINT offset = 0u;
-	pContext->IASetVertexBuffers( 0u,1u,&pVertexBuffer,&stride,&offset );
+	pContext->IASetVertexBuffers( 0u,1u,pVertexBuffer.GetAddressOf(), &stride, &offset);
 
 	// vertexshader
 	wrl::ComPtr<ID3D11VertexShader> pVertexShader;
 	wrl::ComPtr<ID3DBlob> pBlob;
 	GFX_THROW_INFO( D3DReadFileToBlob(L"VertexShader.cso", &pBlob));
 	GFX_THROW_INFO( pDevice->CreateVertexShader(pBlob->GetBufferPointer(), pBlob->GetBufferSize(), nullptr, &pVertexShader));
+	pContext->VSSetShader(pVertexShader.Get(), nullptr, 0u);
 
 	// pixelshader
 	wrl::ComPtr<ID3D11PixelShader> pPixelShader;
 	GFX_THROW_INFO(D3DReadFileToBlob(L"PixelShader.cso", &pBlob));
 	GFX_THROW_INFO(pDevice->CreatePixelShader(pBlob->GetBufferPointer(), pBlob->GetBufferSize(), nullptr, &pPixelShader));
-
-
-	pContext->VSSetShader(pVertexShader.Get(), nullptr, 0u);
 	pContext->PSSetShader(pPixelShader.Get(), nullptr, 0u);
 
+	// configure and set render target
+	pContext->OMGetRenderTargets(1u, pTarget.GetAddressOf(), nullptr);
+
+	D3D11_VIEWPORT viewport_desc = {};
+	viewport_desc.Width = 800;
+	viewport_desc.Height = 600;
+	viewport_desc.TopLeftX = 0;
+	viewport_desc.TopLeftY = 0;
+	viewport_desc.MaxDepth = 1;
+	viewport_desc.MinDepth = 0;
+	pContext->RSSetViewports(1u, &viewport_desc);
+
+
+	// instructs pipeline to start drawing
 	GFX_THROW_INFO_ONLY( pContext->Draw( (UINT) std::size(vertices), 0u));
 }
 
