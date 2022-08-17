@@ -94,6 +94,41 @@ void Graphics::ClearBuffer( float red,float green,float blue ) noexcept
 	pContext->ClearRenderTargetView( pTarget.Get(),color );
 }
 
+void Graphics::DrawTestTriangle()
+{
+	namespace wrl = Microsoft::WRL;
+	HRESULT hr;
+	struct Vertex {
+		float x;
+		float y;
+	};
+
+	const Vertex vertices[] = {
+		{0.0f, 0.5f},
+		{0.5f, -0.5f},
+		{-0.5f, -0.5f}
+	};
+
+	wrl::ComPtr<ID3D11Buffer> pVertexBuffer;
+	D3D11_BUFFER_DESC bdesc = {};
+	bdesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
+	bdesc.ByteWidth = sizeof(vertices);
+	bdesc.CPUAccessFlags = 0u;
+	bdesc.MiscFlags = 0u;
+	bdesc.StructureByteStride = sizeof(Vertex);
+	bdesc.Usage = D3D11_USAGE_DEFAULT;
+	D3D11_SUBRESOURCE_DATA sres_data = {};
+	sres_data.pSysMem = vertices;
+	GFX_THROW_INFO( pDevice->CreateBuffer(&bdesc, &sres_data, &pVertexBuffer) );
+
+
+	// bind vertex buffer to pipeline
+	const UINT stride = sizeof(Vertex);
+	const UINT offset = 0u;
+	pContext->IASetVertexBuffers(0u, 1u, &pVertexBuffer, &stride, &offset);
+	pContext->Draw(3u, 0u);
+}
+
 
 // Graphics exception stuff
 Graphics::HrException::HrException( int line,const char * file,HRESULT hr,std::vector<std::string> infoMsgs ) noexcept
