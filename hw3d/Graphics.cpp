@@ -133,12 +133,21 @@ void Graphics::DrawTestTriangle()
 	const UINT offset = 0u;
 	pContext->IASetVertexBuffers( 0u,1u,&pVertexBuffer,&stride,&offset );
 
+	// vertexshader
 	wrl::ComPtr<ID3D11VertexShader> pVertexShader;
 	wrl::ComPtr<ID3DBlob> pBlob;
 	GFX_THROW_INFO( D3DReadFileToBlob(L"VertexShader.cso", &pBlob));
 	GFX_THROW_INFO( pDevice->CreateVertexShader(pBlob->GetBufferPointer(), pBlob->GetBufferSize(), nullptr, &pVertexShader));
 
+	// pixelshader
+	wrl::ComPtr<ID3D11PixelShader> pPixelShader;
+	GFX_THROW_INFO(D3DReadFileToBlob(L"PixelShader.cso", &pBlob));
+	GFX_THROW_INFO(pDevice->CreatePixelShader(pBlob->GetBufferPointer(), pBlob->GetBufferSize(), nullptr, &pPixelShader));
+
+
 	pContext->VSSetShader(pVertexShader.Get(), nullptr, 0u);
+	pContext->PSSetShader(pPixelShader.Get(), nullptr, 0u);
+
 	GFX_THROW_INFO_ONLY( pContext->Draw( (UINT) std::size(vertices), 0u));
 }
 
