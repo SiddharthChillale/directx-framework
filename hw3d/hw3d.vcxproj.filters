@@ -111,4 +111,7 @@
       <Filter>Dxerr</Filter>
     </None>
   </ItemGroup>
+  <ItemGroup>
+    <FxCompile Include="VertexShader.hlsl" />
+  </ItemGroup>
 </Project>
